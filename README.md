@@ -13,7 +13,7 @@ It includes graph operations, e.g., adding or removing arcs and nodes, together 
 
 ### components
 It includes two main classes: **developers** and **bugs**. 
-* `assignee.py` has the `Assignee` class which includes the information of the developers and track the assigned bugs to them and the accuracy of those assignments. It also keeps their LDA experience and the time limit $L$ of them.
+* `assignee.py` has the `Assignee` class which includes the information of the developers and track the assigned bugs to them and the accuracy of those assignments. It also keeps their LDA experience and the time limit <img src="https://render.githubusercontent.com/render/math?math=L">of them.
 * `bug.py` has the `Bug` class which includes all the essential information of each bugs, including ID, severity, priority, depth, degree, status, summary, description, fixing time, and so on. It has its methods to track the assigned developer and assignment time, compute the accuracy of the assignment, check the validity of the bugs for assignment based on preprocessing steps in the paper, update its blocking information, and change its status to fixed or reopenned. 
 
 
@@ -44,7 +44,7 @@ To run the code, a sample command might be as follows.
 python simulator/main.py --project=LibreOffice --resolution=SDABT --n_days=3438  --verbose=0
 ```
 
-If you want to do parallel runs for testing the hyperparameter of the model $\alpha$, you need to run as follows:
+If you want to do parallel runs for testing the hyperparameter of the model <img src="https://render.githubusercontent.com/render/math?math=\alpha">, you need to run as follows:
 ```python
 python simulator/main.py --project=EclipseJDT --resolution=SDABT --n_days=6644 --alpha_testing=yes --part=1/2
 python simulator/main.py --project=EclipseJDT --resolution=SDABT --n_days=6644 --alpha_testing=yes --part=2/2
@@ -57,7 +57,7 @@ Regarding the options available for the `main.py` file:
   * `project` can be `Mozilla`, `LibreOffice`, or `EclipseJDT`. A user can also extract and add their own ITS database. 
   * `--n_days` defines the number of days from the beginning to the end of the lifespan. Based on our database, it should be 3438 days for LibreOffice,  7511 days for Mozilla, and 6644 days for EclipseJDT.
   * `--verbose` indicates how to print the output and can be either: ```[0, 1, 2, nothing, some, all]```.
-  * `--alpha_testing` is used when you want to test parameter $\alpha$ of the model. It can be: ```[yes, y, True, no, n, False]```.
+  * `--alpha_testing` is used when you want to test parameter <img src="https://render.githubusercontent.com/render/math?math=\alpha"> of the model. It can be: ```[yes, y, True, no, n, False]```.
   * `--part` is used for parallel running. It is specially used when alpha_testing is True. It should be in the format of #/#. For instance, 1/2 says that run the model for the first half of the options for alpha, (e.g., 0, 0.1, 0.2, 0.3, 0.4, 0.5) and 2/2 will do it for the second half (e.g., 0.6, 0.7, 0.8, 0.9 ,1.0)
 
 More details on the simulator are commented on in the files.
