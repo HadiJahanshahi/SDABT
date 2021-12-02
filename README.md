@@ -93,4 +93,9 @@ It contains `attention_decoder` for the DeepTriage strategy. `debugger` to searc
 ____________
 The output of each run will be saved in the `dat` folder automatically. 
 
+
+# The importance of the problem with a simple example
+
+![Developers' schedule](https://raw.githubusercontent.com/HadiJahanshahi/SDABT/main/imgs/Schedule-slot-developers.png)
+
 Any questions? Please do not hesitate to contact me: hadi . jahanshahi [at] ryerson.ca
