@@ -99,7 +99,7 @@ To the best of our knowledge, this is the first work that takes into account the
 The below figure shows a typical example of two developers' schedules and a new arriving bug. 
 Based on the bug fixing history of each developer, we can see that the first developer can work on two bugs simultaneously, whereas the second developer may work on three bugs at a time. 
 Moreover, the schedule of each developer can be estimated for the upcoming days according to the approximate fixing time of the currently assigned bugs. 
-Here, ``0'' means that the schedule is occupied by an assigned bug, whereas ``1'' represents the availabilities of a developer. 
+Here, `0` means that the schedule is occupied by an assigned bug, whereas `1` represents the availabilities of a developer. 
 Thus, the binary parameter <img src="https://render.githubusercontent.com/render/math?math=T_{jt}^d"> denotes whether slot <img src="https://render.githubusercontent.com/render/math?math=j"> of developer <img src="https://render.githubusercontent.com/render/math?math=d"> is available at day <img src="https://render.githubusercontent.com/render/math?math=t">. 
 For instance, the first slot of the second developer is preoccupied for the third day (i.e., <img src="https://render.githubusercontent.com/render/math?math=T_{13}^2 = 0">). 
 Similarly, while assigning a bug, we may exclude the days for which a developer is not available, e.g., days 8 and 9 of developer 1.
@@ -113,4 +113,6 @@ Accordingly, the model should consider how suitable the bug is for each develope
 For instance, assume that bug $i$ in the above figure takes six days for developer <img src="https://render.githubusercontent.com/render/math?math=d_1">, and three days for developer <img src="https://render.githubusercontent.com/render/math?math=d_2"> to be fixed.
 Then, the model cannot assign the bug <img src="https://render.githubusercontent.com/render/math?math=i"> to developer <img src="https://render.githubusercontent.com/render/math?math=d_1"> as there are no six-day-long availability in her schedule. 
 On the other hand, since the third slot of developer <img src="https://render.githubusercontent.com/render/math?math=d_2"> is almost free, the model could assign the bug <img src="https://render.githubusercontent.com/render/math?math=i"> to this developer.
+
+
 Any questions? Please do not hesitate to contact me: hadi . jahanshahi [at] ryerson.ca
