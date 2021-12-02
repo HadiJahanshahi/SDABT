@@ -1,5 +1,4 @@
-# SDABT
-S-DABT: Schedule and Dependency-Aware Bug Triage in Open-Source Bug Tracking Systems
+# S-DABT: Schedule and Dependency-Aware Bug Triage in Open-Source Bug Tracking Systems
 
 **Authors**: Hadi Jahanshahi*, Mucahit Cevik, and Ayse Basar
 
