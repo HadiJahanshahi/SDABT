@@ -110,7 +110,7 @@ Assume a new bug <img src="https://render.githubusercontent.com/render/math?math
 It first checks the suitability of the bug for each developer based on their previous experience in handling a similar bug. 
 The fixing time of a bug may vary from one developer to another. 
 Accordingly, the model should consider how suitable the bug is for each developer, how long the bug may take to be fixed by each developer, and how the availability of the developers will be during the planning horizon. 
-For instance, assume that bug $i$ in the above figure takes six days for developer <img src="https://render.githubusercontent.com/render/math?math=d_1">, and three days for developer <img src="https://render.githubusercontent.com/render/math?math=d_2"> to be fixed.
+For instance, assume that bug <img src="https://render.githubusercontent.com/render/math?math=i"> in the above figure takes six days for developer <img src="https://render.githubusercontent.com/render/math?math=d_1">, and three days for developer <img src="https://render.githubusercontent.com/render/math?math=d_2"> to be fixed.
 Then, the model cannot assign the bug <img src="https://render.githubusercontent.com/render/math?math=i"> to developer <img src="https://render.githubusercontent.com/render/math?math=d_1"> as there are no six-day-long availability in her schedule. 
 On the other hand, since the third slot of developer <img src="https://render.githubusercontent.com/render/math?math=d_2"> is almost free, the model could assign the bug <img src="https://render.githubusercontent.com/render/math?math=i"> to this developer.
 
