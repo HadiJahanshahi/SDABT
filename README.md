@@ -115,7 +115,7 @@ Then, the model cannot assign the bug <img src="https://render.githubusercontent
 On the other hand, since the third slot of developer <img src="https://render.githubusercontent.com/render/math?math=d_2"> is almost free, the model could assign the bug <img src="https://render.githubusercontent.com/render/math?math=i"> to this developer.
 
 ```LaTeX
-\sum_{\forall i}{x_i^{2}}
+$$\sum_{\forall i}{x_i^{2}}$$
 ```
 
 
