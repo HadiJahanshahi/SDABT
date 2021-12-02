@@ -114,9 +114,5 @@ For instance, assume that bug <img src="https://render.githubusercontent.com/ren
 Then, the model cannot assign the bug <img src="https://render.githubusercontent.com/render/math?math=i"> to developer <img src="https://render.githubusercontent.com/render/math?math=d_1"> as there are no six-day-long availability in her schedule. 
 On the other hand, since the third slot of developer <img src="https://render.githubusercontent.com/render/math?math=d_2"> is almost free, the model could assign the bug <img src="https://render.githubusercontent.com/render/math?math=i"> to this developer.
 
-```LaTeX
-$$\sum_{\forall i}{x_i^{2}}$$
-```
-
 
 Any questions? Please do not hesitate to contact me: hadi . jahanshahi [at] ryerson.ca
