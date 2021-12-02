@@ -6,7 +6,7 @@ from utils.prerequisites import *  # Packages and these functions: isNaN, isnotN
                                    # convert_string_to_array, mean_list, and string_to_time
 from utils.report import Report
 
-from simulator.wayback import Discrete_event_simulation
+from simulator.sdabt import Discrete_event_simulation
 
 
 #######################################
@@ -41,7 +41,7 @@ parser.add_argument(
     '--resolution',
     default = 'Actual',
     type    = str,
-    help    = 'it can be selected from this list: [Actual, DABT, RABT, CosTriage, CBR]'
+    help    = 'it can be selected from this list: [Actual, DABT, RABT, CosTriage, CBR, DABT, SDABT]'
 )
 
 parser.add_argument(
@@ -51,12 +51,6 @@ parser.add_argument(
     help    = 'How many days we need to train?'
 )
 
-parser.add_argument(
-    '--prioritization_triage',
-    default = 'triage',
-    type    = str,
-    help    = 'it can be selected from this list: [prioritization, triage, both]'
-)
 parser.add_argument(
     '--verbose',
     default = 0,
@@ -102,36 +96,21 @@ part                 = wayback_param.part
 [bug_evolutionary_db, bug_info_db, list_of_developers, 
  time_to_fix_LDA, SVM_model, feasible_bugs_actual, embeddings] = Functions.read_files(project)
 
-if wayback_param.prioritization_triage.lower() in ['prioritization', 'both']:
-    simul_prioritization = Discrete_event_simulation(bug_evolutionary_db, bug_info_db, list_of_developers,
-                                                     time_to_fix_LDA, SVM_model, Tfidf_vect, project, feasible_bugs_actual,
-                                                     embeddings, resolution = file_name, verbose=verbose)
-    stop_date            = len(pd.date_range(start=simul_prioritization.bug_evolutionary_db.time.min().date(), end='31/12/2019'))
-    stop_training        = len(pd.date_range(start=simul_prioritization.bug_evolutionary_db.time.min().date(), end='31/12/2017'))
-    stop_testing         = len(pd.date_range(start='01/01/2018', end='31/12/2019')) # whole testing period
-if wayback_param.prioritization_triage.lower() in ['triage', 'both']:
-    simul_triage         = Discrete_event_simulation(bug_evolutionary_db, bug_info_db, list_of_developers,
-                                                     time_to_fix_LDA, SVM_model, Tfidf_vect, project, feasible_bugs_actual,
-                                                     embeddings, resolution = file_name, verbose=verbose)
-    stop_date            = len(pd.date_range(start=simul_triage.bug_evolutionary_db.time.min().date(), end='31/12/2019'))
-    stop_training        = len(pd.date_range(start=simul_triage.bug_evolutionary_db.time.min().date(), end='31/12/2017'))#training
-    stop_testing         = len(pd.date_range(start='01/01/2018', end='31/12/2019')) # whole testing period
+simul_triage         = Discrete_event_simulation(bug_evolutionary_db, bug_info_db, list_of_developers,
+												 time_to_fix_LDA, SVM_model, Tfidf_vect, project, feasible_bugs_actual,
+												 embeddings, resolution = file_name, verbose=verbose)
+stop_date            = len(pd.date_range(start=simul_triage.bug_evolutionary_db.time.min().date(), end='31/12/2019'))
+stop_training        = len(pd.date_range(start=simul_triage.bug_evolutionary_db.time.min().date(), end='31/12/2017'))#training
+stop_testing         = len(pd.date_range(start='01/01/2018', end='31/12/2019')) # whole testing period
 
 if alpha_testing == False:
     try:
         for i in tqdm(range(stop_date), desc="simulating days", position=0, leave=True):
-            if wayback_param.prioritization_triage.lower() in ['prioritization', 'both']:
-                simul_prioritization.prioritization()
-            if wayback_param.prioritization_triage.lower() in ['triage', 'both']:
-                simul_triage.triage()
+            simul_triage.triage()
             #if (simul_Actual_time_half.date > simul_Actual_time_half.testing_time):
         
-        if wayback_param.prioritization_triage.lower() in ['prioritization', 'both']:
-            with open(f'dat/{project}/{file_name}_{i}_prioritization.pickle', 'wb') as file:
-                pickle.dump(simul_prioritization, file) # use `pickle.load` to do the reverse
-        if wayback_param.prioritization_triage.lower() in ['triage', 'both']:
-            with open(f'dat/{project}/{file_name}_{i}_triage.pickle', 'wb') as file:
-                pickle.dump(simul_triage, file) # use `pickle.load` to do the reverse
+		with open(f'dat/{project}/{file_name}_{i}_triage.pickle', 'wb') as file:
+			pickle.dump(simul_triage, file) # use `pickle.load` to do the reverse
     except Exception as e:
         # winsound.PlaySound("*", winsound.SND_ALIAS) #It only works on Windows not Linux
         raise e
@@ -139,70 +118,51 @@ if alpha_testing == False:
 elif alpha_testing == True:
     """ Testing the tradeoff for different alpha values."""
     for i in tqdm(range(stop_training), desc="training days", position=0, leave=True):
-        if wayback_param.prioritization_triage.lower() in ['prioritization', 'both']:
-            simul_prioritization.prioritization()
-        if wayback_param.prioritization_triage.lower() in ['triage', 'both']:
-            simul_triage.triage()
+		simul_triage.triage()
     """ Keep a backup of the model at the end of the training """
-    if wayback_param.prioritization_triage.lower() in ['prioritization', 'both']:
-        with open(f'dat/{project}/{file_name}_{i}_prioritization.pickle', 'wb') as file:
-            pickle.dump(simul_prioritization, file) # use `pickle.load` to do the reverse
-    if wayback_param.prioritization_triage.lower() in ['triage', 'both']:
-        with open(f'dat/{project}/{file_name}_{i}_triage.pickle', 'wb') as file:
-            pickle.dump(simul_triage, file) # use `pickle.load` to do the reverse
+	with open(f'dat/{project}/{file_name}_{i}_triage.pickle', 'wb') as file:
+		pickle.dump(simul_triage, file) # use `pickle.load` to do the reverse
     for alpha in loop_range:
-        if wayback_param.prioritization_triage.lower() in ['prioritization', 'both']:
-            simul_prioritization_copy       = copy.deepcopy(simul_prioritization)
-            simul_prioritization_copy.alpha = alpha
-        if wayback_param.prioritization_triage.lower() in ['triage', 'both']:
-            simul_triage_copy               = copy.deepcopy(simul_triage)
-            simul_triage_copy.alpha         = alpha
-            simul_triage_copy.start_model_updates_for_testing = time.time()
+		simul_triage_copy               = copy.deepcopy(simul_triage)
+		simul_triage_copy.alpha         = alpha
+		simul_triage_copy.start_model_updates_for_testing = time.time()
         for i in tqdm(range(stop_testing), desc=f"testing days for alpha={round(alpha,1)}", position=0, leave=True):
-            if wayback_param.prioritization_triage.lower() in ['prioritization', 'both']:
-                simul_prioritization_copy.prioritization()
-            if wayback_param.prioritization_triage.lower() in ['triage', 'both']:
-                simul_triage_copy.triage()
-            #if (simul_Actual_time_half.date > simul_Actual_time_half.testing_time):
-        if wayback_param.prioritization_triage.lower() in ['prioritization', 'both']:
-            with open(f'dat/{project}/{file_name}_{i}_{round(alpha,1)}_prioritization.pickle', 'wb') as file:
-                pickle.dump(simul_prioritization_copy, file) # use `pickle.load` to do the reverse
-        if wayback_param.prioritization_triage.lower() in ['triage', 'both']:
-            with open(f'dat/{project}/{file_name}_{i}_{round(alpha,1)}_triage.pickle', 'wb') as file:
-                pickle.dump(simul_triage_copy, file) # use `pickle.load` to do the reverse
+			simul_triage_copy.triage()
+		with open(f'dat/{project}/{file_name}_{i}_{round(alpha,1)}_triage.pickle', 'wb') as file:
+			pickle.dump(simul_triage_copy, file) # use `pickle.load` to do the reverse
 
 else:
     raise Exception('Double-Check str2boolean function of alpha_testing variable')
 
-# python3.7 simulator/main.py --project=Mozilla --resolution=Actual --n_days=7511 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=EclipseJDT --resolution=Actual --n_days=6644 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=LibreOffice --resolution=Actual --n_days=3438 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=Mozilla --resolution=SDABT --n_days=7511 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=EclipseJDT --resolution=SDABT --n_days=6644 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=LibreOffice --resolution=SDABT --n_days=3438 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=Mozilla --resolution=DABT --n_days=7511 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=EclipseJDT --resolution=DABT --n_days=6644 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=LibreOffice --resolution=DABT --n_days=3438 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=Mozilla --resolution=Random --n_days=7511 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=EclipseJDT --resolution=Random --n_days=6644 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=LibreOffice --resolution=Random --n_days=3438 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=Mozilla --resolution=RABT --n_days=7511 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=EclipseJDT --resolution=RABT --n_days=6644 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=LibreOffice --resolution=RABT --n_days=3438 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=Mozilla --resolution=CosTriage --n_days=7511 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=EclipseJDT --resolution=CosTriage --n_days=6644 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=LibreOffice --resolution=CosTriage --n_days=3438 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=Mozilla --resolution=CBR --n_days=7511 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=EclipseJDT --resolution=CBR --n_days=6644 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=LibreOffice --resolution=CBR --n_days=3438 --prioritization_triage=triage
-# python3.7 simulator/main.py --project=Mozilla --resolution=SDABT --n_days=7511 --prioritization_triage=triage --alpha_testing=True --part=1/4
-# python3.7 simulator/main.py --project=Mozilla --resolution=SDABT --n_days=7511 --prioritization_triage=triage --alpha_testing=True --part=2/4
-# python3.7 simulator/main.py --project=Mozilla --resolution=SDABT --n_days=7511 --prioritization_triage=triage --alpha_testing=True --part=3/4
-# python3.7 simulator/main.py --project=Mozilla --resolution=SDABT --n_days=7511 --prioritization_triage=triage --alpha_testing=True --part=4/4
-# python3.7 simulator/main.py --project=EclipseJDT --resolution=SDABT --n_days=6644 --prioritization_triage=triage --alpha_testing=True --part=1/2
-# python3.7 simulator/main.py --project=EclipseJDT --resolution=SDABT --n_days=6644 --prioritization_triage=triage --alpha_testing=True --part=2/2
-# python3.7 simulator/main.py --project=LibreOffice --resolution=SDABT --n_days=3438 --prioritization_triage=triage --alpha_testing=True --part=1/2
-# python3.7 simulator/main.py --project=LibreOffice --resolution=SDABT --n_days=3438 --prioritization_triage=triage --alpha_testing=True --part=2/2
+# python3.7 simulator/main.py --project=Mozilla --resolution=Actual --n_days=7511 
+# python3.7 simulator/main.py --project=EclipseJDT --resolution=Actual --n_days=6644 
+# python3.7 simulator/main.py --project=LibreOffice --resolution=Actual --n_days=3438 
+# python3.7 simulator/main.py --project=Mozilla --resolution=SDABT --n_days=7511 
+# python3.7 simulator/main.py --project=EclipseJDT --resolution=SDABT --n_days=6644 
+# python3.7 simulator/main.py --project=LibreOffice --resolution=SDABT --n_days=3438 
+# python3.7 simulator/main.py --project=Mozilla --resolution=DABT --n_days=7511 
+# python3.7 simulator/main.py --project=EclipseJDT --resolution=DABT --n_days=6644 
+# python3.7 simulator/main.py --project=LibreOffice --resolution=DABT --n_days=3438 
+# python3.7 simulator/main.py --project=Mozilla --resolution=Random --n_days=7511 
+# python3.7 simulator/main.py --project=EclipseJDT --resolution=Random --n_days=6644 
+# python3.7 simulator/main.py --project=LibreOffice --resolution=Random --n_days=3438 
+# python3.7 simulator/main.py --project=Mozilla --resolution=RABT --n_days=7511 
+# python3.7 simulator/main.py --project=EclipseJDT --resolution=RABT --n_days=6644 
+# python3.7 simulator/main.py --project=LibreOffice --resolution=RABT --n_days=3438 
+# python3.7 simulator/main.py --project=Mozilla --resolution=CosTriage --n_days=7511 
+# python3.7 simulator/main.py --project=EclipseJDT --resolution=CosTriage --n_days=6644 
+# python3.7 simulator/main.py --project=LibreOffice --resolution=CosTriage --n_days=3438 
+# python3.7 simulator/main.py --project=Mozilla --resolution=CBR --n_days=7511 
+# python3.7 simulator/main.py --project=EclipseJDT --resolution=CBR --n_days=6644 
+# python3.7 simulator/main.py --project=LibreOffice --resolution=CBR --n_days=3438 
+# python3.7 simulator/main.py --project=Mozilla --resolution=SDABT --n_days=7511 --alpha_testing=yes --part=1/4
+# python3.7 simulator/main.py --project=Mozilla --resolution=SDABT --n_days=7511 --alpha_testing=yes --part=2/4
+# python3.7 simulator/main.py --project=Mozilla --resolution=SDABT --n_days=7511 --alpha_testing=yes --part=3/4
+# python3.7 simulator/main.py --project=Mozilla --resolution=SDABT --n_days=7511 --alpha_testing=yes --part=4/4
+# python3.7 simulator/main.py --project=EclipseJDT --resolution=SDABT --n_days=6644 --alpha_testing=yes --part=1/2
+# python3.7 simulator/main.py --project=EclipseJDT --resolution=SDABT --n_days=6644 --alpha_testing=yes --part=2/2
+# python3.7 simulator/main.py --project=LibreOffice --resolution=SDABT --n_days=3438 --alpha_testing=yes --part=1/2
+# python3.7 simulator/main.py --project=LibreOffice --resolution=SDABT --n_days=3438 --alpha_testing=yes --part=2/2
 # To find site-packages location: python -m site
 # creating example.pth there 
 # PATH="$PATH:/home/hadi/Hadi_progress-1/Scripts/Bugzilla_Mining/OOP/
